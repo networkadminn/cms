@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cms-database
+  labels:
+    app: cms-database
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cms-database
+  template:
+    metadata:
+      labels:
+        app: cms-database
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: cms
+        - name: POSTGRES_PASSWORD
+          value: cms
+        - name: POSTGRES_DB
+          value: cmsdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cms-database
+  labels:
+    app: cms-database
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5432
+    targetPort: 5432
+  selector:
+    app: cms-database
